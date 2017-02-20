@@ -4,14 +4,14 @@
 
 using namespace std;
 
-void main()
+int main(int argc, char* argv[])
 {
 	const int N = 20;
 	double a[N], procSum, Sum, Sum2=0;
 	int rank, size;
 	srand((unsigned)time(0));
 
-	MPI_Init(NULL,NULL);
+	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 
