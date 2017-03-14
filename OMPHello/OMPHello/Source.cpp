@@ -55,17 +55,25 @@ void main()
 //		}
 //	}
 
-#pragma omp parallel private(rank)
+#pragma omp parallel private(rank, k)
 	{
+		k = 6;
 		double t1 = omp_get_wtime();
+
 #pragma omp for
 		for (int i = 0; i < 100; i++)
 		{
 
 			rank = omp_get_thread_num();
-			printf("Iter - %d thread - %d\n", i, rank);
+			//printf("Iter - %d thread - %d\n", i, rank);
 		}
 
+#pragma omp single
+		{
+			printf("%d thread - k=%d\n", rank, k);
+			
+		}
+				
 		//#pragma omp barrier
 		
 #pragma omp critical
@@ -78,6 +86,6 @@ void main()
 
 
 	}
-
+	printf("k=%d\n", k);
 	system("pause");
 }
