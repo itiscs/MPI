@@ -8,14 +8,14 @@ int main(int argc, char* argv[])
 {
 	const int N = 20;
 	int rank, size;
-	double a[N], sum = 0, sum1=0, procSum = 0;
+	double a[N], sum = 0, sum1 = 0, procSum = 0;
 
-	srand(time(0));
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-	if (!rank) //rank==0
+	srand(time(0));
+	if (!rank) 
 	{
 		for (int i = 0; i < N; i++)
 		{
@@ -23,7 +23,6 @@ int main(int argc, char* argv[])
 			printf("%f ", a[i]);
 			sum1 += a[i];
 		}
-		printf("\n");
 	}
 
 	MPI_Bcast(a, N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
@@ -37,29 +36,26 @@ int main(int argc, char* argv[])
 	for (int i = i1; i < i2; i++)
 		procSum += a[i];
 
-
 	MPI_Reduce(&procSum, &sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-	
-	if(!rank)
-		printf("sum=%f sum1=%f\n", sum, sum1);
 
+	printf("\nsum=%f sum1=%f\n", sum, sum1);
 
-	//if (rank)
+	//if (rank)//rank!=0
 	//{
 	//	MPI_Send(&procSum, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
 	//}
-	//else
+	//else   // rank == 0
 	//{
 	//	MPI_Status st;
 	//	sum = procSum;
 	//	for (int i = 1; i < size; i++)
 	//	{
-	//		MPI_Recv(&procSum, 1, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &st);
+	//		MPI_Recv(&procSum, 1, MPI_DOUBLE, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &st);
 	//		sum += procSum;
 	//	}
-	//	printf("sum=%f sum1=%f\n", sum,sum1);
+	//	printf("\nsum=%f sum1=%f\n", sum, sum1);
 	//}
-	
+		
 	MPI_Finalize();
 
 }
