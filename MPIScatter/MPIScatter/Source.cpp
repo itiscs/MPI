@@ -14,23 +14,24 @@ int main(int argc, char* argv[])
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-
 	srand(time(0));
-	if (!rank)
+	if (!rank) // rank == 0
 	{
 		for (int i = 0; i < N; i++)
 		{
-			a[i] = i;	
+			a[i] = (double)(rand() % 100) / 100;
+			printf("%f ", a[i]);
 			sum1 += a[i];
 		}
+		printf("\n");
+
 	}
 
-	int *len = new int[size];
-	int *ind = new int[size];
-	int rest, k;
+	int* len = new int[size];
+	int* ind = new int[size];
 
-	rest = N;
-	k = rest / size;
+	int rest = N;
+	int k = rest / size;
 	len[0] = k;
 	ind[0] = 0;
 	for (int i = 1; i < size; i++)
@@ -45,20 +46,17 @@ int main(int argc, char* argv[])
 	procA = new double[procN];
 
 	MPI_Scatterv(a, len, ind, MPI_DOUBLE, procA, procN, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	
-	delete len;
-	delete ind;
+	//MPI_Gatherv(procA, procN, MPI_DOUBLE, a, len, ind, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 	
 	for (int i = 0; i < procN; i++)
-		procSum +=  procA[i];
+		procSum += procA[i];
+		//printf("%f ", procA[i]);
+	//printf(" - %d \n", rank);
 
-	MPI_Reduce(&procSum, &sum, 1, MPI_DOUBLE, MPI_SUM,0, MPI_COMM_WORLD);
-
-	delete procA;
+	MPI_Reduce(&procSum, &sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
 	if(!rank)
 		printf("\nsum=%f sum1=%f\n", sum, sum1);
-
 
 	MPI_Finalize();
 
