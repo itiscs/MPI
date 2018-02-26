@@ -1,91 +1,81 @@
 #include <iostream>
-#include <stdio.h>
 #include <omp.h>
 #include <Windows.h>
 using namespace std;
 
-//int main(int argc, char* argv[] )
-void main()
+int main()
 {
-	int rank , size;
-	int k = 5, d=-5;
-
-//#pragma omp parallel num_threads(10) private(rank) firstprivate(k) shared(size)
+	int kol = 10;
+	int k = 10;
+//#pragma omp parallel num_threads(10) shared(kol) firstprivate(k)
 //	{
-//		
-//		rank = omp_get_thread_num();
+//		int id, size;
+//		id = omp_get_thread_num();
 //		size = omp_get_num_threads();
-//		k++;
-//		d = rank;
-//
-//		printf("Hello from %d thread out of %d - %d\n",rank, size, k);
+//		
+//		kol += id;
+//		k += id;
+//		printf("proc - %d kol = %d k = %d!\n", id, kol, k);
 //	}
+//	printf("after kol = %d  k = %d\n", kol, k);
 
-//#pragma omp parallel sections 
+//#pragma omp parallel 
 //	{
-//#pragma omp section
+//
+//#pragma omp	sections 
 //		{
-//			rank = omp_get_thread_num();
-//			printf("Section - 0 thread - %d\n", rank);	
-//			Sleep(100);
-//		}
 //#pragma omp section
-//		{
-//			rank = omp_get_thread_num();
-//			printf("Section - 1 thread - %d\n", rank);
-//			//Sleep(100);
-//		}
+//			{
+//				Sleep(1000);
+//				printf("Section - 0 proc - %d\n",
+//					omp_get_thread_num());
+//			}
 //#pragma omp section
-//		{
-//			rank = omp_get_thread_num();
-//			printf("Section - 2 thread - %d\n", rank);
-//			Sleep(100);
-//		}
+//			{
+//				printf("Section - 1 proc - %d\n",
+//					omp_get_thread_num());
+//			}
 //#pragma omp section
-//		{
-//			rank = omp_get_thread_num();
-//			printf("Section - 3 thread - %d\n", rank);
-//			Sleep(100);
-//		}
+//			{
+//				Sleep(1000);
+//				printf("Section - 2 proc - %d\n",
+//					omp_get_thread_num());
+//			}
 //#pragma omp section
-//		{
-//			rank = omp_get_thread_num();
-//			printf("Section - 4 thread - %d\n", rank);
-//			Sleep(100);
+//			{
+//				Sleep(1000);
+//				printf("Section - 3 proc - %d\n",
+//					omp_get_thread_num());
+//			}
+//#pragma omp section
+//			{
+//
+//				printf("Section - 4 proc - %d\n",
+//					omp_get_thread_num());
+//			}
 //		}
+//
 //	}
 
-#pragma omp parallel private(rank, k)
+	int k1 = 0, max = 0;
+	
+#pragma omp parallel for //schedule(guided, 10)
+	for (int i = 0; i < 100000; i++)
 	{
-		k = 6;
-		double t1 = omp_get_wtime();
-
-#pragma omp for
-		for (int i = 0; i < 100; i++)
-		{
-
-			rank = omp_get_thread_num();
-			//printf("Iter - %d thread - %d\n", i, rank);
-		}
-
-#pragma omp single
-		{
-			printf("%d thread - k=%d\n", rank, k);
-			
-		}
-				
-		//#pragma omp barrier
-		
+//#pragma omp atomic
+//		k1+=5;
+		k1 = rand() % 100;
+		if (k1 > max)
 #pragma omp critical
 		{
-			double t2 = omp_get_wtime();
-			printf("%d %f\n", rank, t2 - t1);
+			if (k1 > max)
+				max = k1;
 		}
-#pragma omp atomic
-		k+=5;
-
-
+		//printf("Iter - %d proc - %d\n", i, omp_thread_num());
 	}
-	printf("k=%d\n", k);
+
+	printf("k = %d\n", k1);
+
 	system("pause");
+	return 0;
 }
